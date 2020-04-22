@@ -1,36 +1,37 @@
 import java.nio.ByteBuffer
+import kotlin.random.Random
 
-const val SIZE = 100
+const val WINDOW_SIZE = 100
+const val SAMPLE_SIZE = 200
 
-var vsize = 0
 val stairs = Stairs(100)
 val buffer = arrayListOf<Byte>()
+var vsize = 0
 
 fun main(){
-    generateDNA(){
-        buffer.add(it)
-        if (buffer.size == SIZE) {
-            stairs.add(ByteBuffer.wrap(buffer.toByteArray()), 1) {
-                printStairs(it)
+
+    for (i in 0..SAMPLE_SIZE) {
+        vsize = 0
+        generateSequence {
+            buffer.add(it)
+            if (buffer.size == WINDOW_SIZE) {
+                stairs.add(ByteBuffer.wrap(buffer.toByteArray()), 1) {
+                    printStairs(it)
+                }
+                buffer.clear()
             }
-            buffer.clear()
         }
-    }
 
-   println("\nvector size: $vsize")
-}
-
-fun generateDNA(size: Int = 10000000, consume: (b: Byte)->Unit){
-    var idx =0
-    for(i in 0..size) {
-        consume(idx.toByte())
-        idx = (idx + 1)%4
+        println("\nstairs vector size: $vsize")
     }
 }
 
+fun generateSequence(size: Int = 1000000, consume: (b: Byte) -> Unit){
+    for(i in 0..size)
+        consume(Random.nextInt(0,4).toByte())
+}
 
 fun printStairs(v: Array<Float>) {
     v.forEach { print("$it ") }
     vsize += v.size
 }
-
